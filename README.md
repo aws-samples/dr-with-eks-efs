@@ -1,11 +1,6 @@
-## My Project
+## Multi Region Disaster Recovery with EKS and EFS for Stateful Workloads
 
-TODO: Fill this README out!
-
-Be sure to:
-
-* Change the title in this README
-* Edit your repository description on GitHub
+This project shows the steps involved to implement the solution architecture explained in this AWS blog: ....
 
 ## Security
 
