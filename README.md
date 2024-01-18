@@ -2,6 +2,13 @@
 
 This project shows the steps involved to implement the solution architecture explained in this AWS blog: ....
 
+## Prerequisites
+
+
+## Solution
+
+### Step 1 - Clone this GitHub repo to your machine :
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
