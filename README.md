@@ -29,6 +29,16 @@ cd dr-with-eks-efs
 aws cloudformation create-stack --stack-name primary --template-body file://template/cfn_primary.yaml
 ```
 
+### Step 3 - Check the status of the CloudFormation stack :
+
+```bash
+watch aws cloudformation describe-stacks --stack-name primary --query "Stacks[0].StackStatus" --output text
+```
+
+Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit using `CTRL + C`. 
+
+For easier reference you can navigate to the CloudFormation service console and see which resources are created. At a high level the resources created are a VPC, two public subnets, two private subnets.
+
 If you prefer to use your own values for the parameters in the stack then please use the `--parameters` option with the above command followed by `ParameterKey=KeyPairName, ParameterValue=TestKey`.
 
 ## Security
