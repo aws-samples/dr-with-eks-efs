@@ -4,6 +4,13 @@ This project shows the steps involved to implement the solution architecture exp
 
 ## Prerequisites
 
+- [ ] A machine which has access to AWS and Kubernetes API server.
+- [ ] You need the following tools on the client machine.
+	  - [ ] [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+   	- [ ] [eksctl](https://eksctl.io/installation/)
+  	- [ ] [kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html)
+  	- [ ] [Helm](https://helm.sh/docs/intro/install/)
+  	- [ ] [kubectx](https://github.com/ahmetb/kubectx) - Optional
 
 ## Solution
 
