@@ -18,6 +18,13 @@ Assumption : You already configured a [default] in the AWS CLI config/credential
 
 ### Step 1 - Clone this GitHub repo to your machine :
 
+### Step 1 - Clone this GitHub repo to your machine:
+
+```bash
+git clone https://github.com/aws-samples/dr-with-eks-efs.git
+cd dr-with-eks-efs
+```
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
