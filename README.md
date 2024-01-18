@@ -16,14 +16,20 @@ Assumption : You already configured a [default] in the AWS CLI config/credential
 
 ## Solution
 
-### Step 1 - Clone this GitHub repo to your machine :
-
 ### Step 1 - Clone this GitHub repo to your machine:
 
 ```bash
 git clone https://github.com/aws-samples/dr-with-eks-efs.git
 cd dr-with-eks-efs
 ```
+
+### Step 2 - Create CloudFormation Stack for the primary region : 
+
+```bash
+aws cloudformation create-stack --stack-name primary --template-body file://template/cfn_primary.yaml
+```
+
+If you prefer to use your own values for the parameters in the stack then please use the `--parameters` option with the above command followed by `ParameterKey=KeyPairName, ParameterValue=TestKey`.
 
 ## Security
 
