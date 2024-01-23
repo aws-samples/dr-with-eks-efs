@@ -37,9 +37,16 @@ watch aws cloudformation describe-stacks --stack-name primary --query "Stacks[0]
 
 Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit using `CTRL + C`. 
 
-For easier reference you can navigate to the CloudFormation service console and see which resources are created. At a high level the resources created are a VPC, two public subnets, two private subnets.
+For easier reference you can navigate to the CloudFormation service console and see which resources are created. 
 
 If you prefer to use your own values for the parameters in the stack then please use the `--parameters` option with the above command followed by `ParameterKey=KeyPairName, ParameterValue=TestKey`.
+
+### Step 4 - Set environment variables:
+
+```bash
+source config_files/env.sh
+```
+
 
 ## Security
 
