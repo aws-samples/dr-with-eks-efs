@@ -1,0 +1,30 @@
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: '${ClusterPrimary}'
+  region: '${AWS_REGION_PRIMARY}'
+  version: '1.28'
+  tags:
+    EnvironmentName: '${EnvironmentNamePrimary}'
+
+vpc:
+  subnets: 
+    private:
+      private1:
+          id: '${PrivateSubnet1Primary}'
+      private2:
+          id: '${PrivateSubnet2Primary}'
+  clusterEndpoints:
+    privateAccess: true
+    publicAccess: true
+
+managedNodeGroups:
+- name: ng
+  desiredCapacity: 2
+  instanceType: t3.medium
+  privateNetworking: true
+  subnets: 
+    - private1
+    - private2
