@@ -30,13 +30,13 @@ Replace the <AWS-region-code> below with the respective ones listed on the link 
 export AWS_REGION_PRIMARY=<AWS-region-code>
 export AWS_REGION_DR=<AWS-region-code>
 
-### Step 3 - Create CloudFormation Stack for the primary region : 
+### Step 3 - Create CloudFormation Stack in the primary region : 
 
 ```bash
 aws cloudformation create-stack --stack-name primary --template-body file://template/cfn_primary.yaml --region $AWS_REGION_PRIMARY
 ```
 
-### Step 4 - Check the status of the CloudFormation stack :
+### Step 4 - Check the status of the CloudFormation stack in the primary region :
 
 ```bash
 watch aws cloudformation describe-stacks --stack-name primary --query "Stacks[0].StackStatus" --output text --region $AWS_REGION_PRIMARY
@@ -54,13 +54,19 @@ If you prefer to use your own values for the parameters in the stack then please
 source config_files/env_primary.sh
 ```
 
-### Step 6 - Embed environment variables into the eksctl cluster config file for `cluster1`:
+### Step 6 - Embed environment variables into the eksctl cluster config file for the primary region :
 
 ```bash
 envsubst < config_files/cluster_primary_template.yaml > config_files/cluster_primary.yaml
 ```
 
-Cluster config manifests are configured with minimum information. In its current state it deploys EKS v1.28 and the worker nodes use Amazon Linux 2 OS.
+Cluster config manifest is configured with Kubernetes v1.28 and the worker nodes use Amazon Linux 2 OS by default. EFS CSI Driver is configured as an EKS managed addon.
+
+### Step 7 - Create the EKS cluster in the primary region : 
+
+```bash
+eksctl create cluster -f config_files/cluster_primary.yaml
+```
 
 ## Security
 
