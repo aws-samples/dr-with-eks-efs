@@ -16,20 +16,29 @@ Assumption : You already configured a [default] in the AWS CLI config/credential
 
 ## Solution
 
-### Step 1 - Clone this GitHub repo to your machine:
+### Step 2 - Define Primary and Disaster Recovery (DR) regions:
+
+Configure which regions to use as your primary and disaster recovery regions. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions).
+Replace the <AWS-region-code> with the respective ones listed on the link above.
+
+export AWS_REGION_PRIMARY=<AWS-region-code>
+export AWS_REGION_DR=<AWS-region-code>
+
+
+### Step 2 - Clone this GitHub repo to your machine:
 
 ```bash
 git clone https://github.com/aws-samples/dr-with-eks-efs.git
 cd dr-with-eks-efs
 ```
 
-### Step 2 - Create CloudFormation Stack for the primary region : 
+### Step 3 - Create CloudFormation Stack for the primary region : 
 
 ```bash
 aws cloudformation create-stack --stack-name primary --template-body file://template/cfn_primary.yaml
 ```
 
-### Step 3 - Check the status of the CloudFormation stack :
+### Step 4 - Check the status of the CloudFormation stack :
 
 ```bash
 watch aws cloudformation describe-stacks --stack-name primary --query "Stacks[0].StackStatus" --output text
