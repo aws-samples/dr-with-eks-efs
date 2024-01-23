@@ -35,13 +35,13 @@ cd dr-with-eks-efs
 ### Step 3 - Create CloudFormation Stack for the primary region : 
 
 ```bash
-aws cloudformation create-stack --stack-name primary --template-body file://template/cfn_primary.yaml
+aws cloudformation create-stack --stack-name primary --template-body file://template/cfn_primary.yaml --region $AWS_REGION_PRIMARY
 ```
 
 ### Step 4 - Check the status of the CloudFormation stack :
 
 ```bash
-watch aws cloudformation describe-stacks --stack-name primary --query "Stacks[0].StackStatus" --output text
+watch aws cloudformation describe-stacks --stack-name primary --query "Stacks[0].StackStatus" --output text --region $AWS_REGION_PRIMARY
 ```
 
 Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit using `CTRL + C`. 
