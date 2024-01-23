@@ -48,12 +48,19 @@ For easier reference you can navigate to the CloudFormation service console and 
 
 If you prefer to use your own values for the parameters in the stack then please use the `--parameters` option with the above command followed by `ParameterKey=KeyPairName, ParameterValue=TestKey`.
 
-### Step 4 - Set environment variables :
+### Step 5 - Set environment variables :
 
 ```bash
 source config_files/env_primary.sh
 ```
 
+### Step 6 - Embed environment variables into the eksctl cluster config file for `cluster1`:
+
+```bash
+envsubst < config_files/cluster_primary_template.yaml > config_files/cluster_primary.yaml
+```
+
+Cluster config manifests are configured with minimum information. In its current state it deploys EKS v1.28 and the worker nodes use Amazon Linux 2 OS.
 
 ## Security
 
