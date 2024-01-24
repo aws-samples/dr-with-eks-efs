@@ -55,7 +55,7 @@ source config_files/pri_region_env.sh
 envsubst < config_files/pri_region_eksctl_template.yaml > config_files/pri_region_cluster.yaml
 ```
 
-Cluster config manifest is configured with Kubernetes v1.28 and the worker nodes use Amazon Linux 2 OS by default. EFS CSI Driver is configured as an EKS managed addon.
+Have a look at the cluster configuration manifest file. We specify Kubernetes version 1.28 and EFS CSI driver as an EKS managed addon.
 
 ### Step 7 - Create the EKS cluster in the primary region : 
 
