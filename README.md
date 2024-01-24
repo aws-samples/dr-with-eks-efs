@@ -24,9 +24,7 @@ cd dr-with-eks-efs
 ```
 ### Step 2 - Define primary and disaster recovery regions :
 
-Configure your primary and disaster recovery regions as environment variables. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions).
-
-Replace the <AWS-region-code> below with the respective ones listed on the link above.
+Configure your primary and disaster recovery regions as environment variables. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions). Replace the `AWS-region-code` below with the desired region codes that you choose from the link above.
 
 ```bash
 export AWS_REGION_PRIMARY=<AWS-region-code>
