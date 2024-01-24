@@ -98,6 +98,15 @@ Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit u
 
 For easier reference you can navigate to the CloudFormation service console and see which resources are created. If you prefer to use your own values for the parameters in the stack then please use the `--parameters` option with the above command followed by `ParameterKey=KeyPairName, ParameterValue=TestKey`.
 
+### Step 5 - Set and embed additional variables into the eksctl cluster config file for the DR region :
+
+```bash
+source config_files/dr_region_env.sh
+envsubst < config_files/dr_region_eksctl_template.yaml > config_files/dr_region_cluster.yaml
+```
+
+Have a look at the cluster configuration manifest file. We specify Kubernetes version 1.28 and EFS CSI driver as an EKS managed addon.
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
