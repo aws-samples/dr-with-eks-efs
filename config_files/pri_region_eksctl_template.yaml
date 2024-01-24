@@ -6,7 +6,7 @@ metadata:
   region: '${PRI_REGION}'
   version: '1.28'
   tags:
-    EnvironmentName: '${EnvironmentNamePrimary}'
+    EnvironmentName: '${PRI_ENVIRONMENT_NAME}'
 
 iam:
   withOIDC: true
@@ -18,9 +18,9 @@ vpc:
   subnets: 
     private:
       private1:
-          id: '${PrivateSubnet1Primary}'
+          id: '${PRI_PRIVATE_SUBNET_1}'
       private2:
-          id: '${PrivateSubnet2Primary}'
+          id: '${PRI_PRIVATE_SUBNET_2}'
   clusterEndpoints:
     privateAccess: true
     publicAccess: true
