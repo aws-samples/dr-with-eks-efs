@@ -28,9 +28,9 @@ cd dr-with-eks-efs
 Replace the `AWS-region-code` with the desired region code (listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions)) and the `EKS-cluster-name` with a name of your choice.
 
 ```bash
-export pri_region=<Replace>
-export pri_cfn_name=<Replace>
-export pri_cluster_name=<Replace>
+export PRI_REGION=<Replace>
+export PRI_CFN_NAME=<Replace>
+export PRI_CLUSTER_NAME=<Replace>
 ```
 
 ### Step 3 - Create CloudFormation Stack in the primary  region : 
