@@ -49,7 +49,7 @@ For easier reference you can navigate to the CloudFormation service console and 
 
 If you prefer to use your own values for the parameters in the stack then please use the `--parameters` option with the above command followed by `ParameterKey=KeyPairName, ParameterValue=TestKey`.
 
-### Step 5 - Set environment variables :
+### Step 5 - Set environment variables for the primary region :
 
 ```bash
 source config_files/env_primary.sh
