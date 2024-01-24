@@ -28,7 +28,7 @@ Replace the `AWS-region-code` with the desired region code (listed [here](https:
 
 ```bash
 export AWS_REGION_PRIMARY=<AWS-region-code>
-export CFNStack=<Cloudformation-stack-name>
+export CFNstack=<Cloudformation-stack-name>
 export ClusterPrimary=<EKS-cluster-name>
 ```
 
