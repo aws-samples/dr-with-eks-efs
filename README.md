@@ -53,7 +53,7 @@ For easier reference you can navigate to the CloudFormation service console and 
 
 ```bash
 source config_files/pri_region_env.sh
-envsubst < config_files/cluster_primary_template.yaml > config_files/pri_region_eksctl_template.yaml
+envsubst < config_files/pri_region_eksctl_template.yaml > config_files/pri_region_cluster.yaml
 ```
 
 Cluster config manifest is configured with Kubernetes v1.28 and the worker nodes use Amazon Linux 2 OS by default. EFS CSI Driver is configured as an EKS managed addon.
