@@ -24,7 +24,7 @@ cd dr-with-eks-efs
 ```
 ### Step 2 - Define primary region and the EKS cluster name :
 
-Configure your primary region AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions). Replace the `AWS-region-code` below with the desired region code that you choose from the link above. Replace the `EKS-cluster-name` with a name of your choice.
+Replace the `AWS-region-code` with the desired region code (listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions)) and the `EKS-cluster-name` with a name of your choice.
 
 ```bash
 export AWS_REGION_PRIMARY=<AWS-region-code>
