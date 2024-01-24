@@ -78,7 +78,7 @@ export DR_CLUSTER_NAME=<Replace>
 ### Step 8 - Create CloudFormation Stack in the DR region : 
 
 ```bash
-aws cloudformation create-stack --stack-name $DR_CFN_NAME --template-body file://config_files/pri_region_cfn.yaml --region $DR_REGION
+aws cloudformation create-stack --stack-name $DR_CFN_NAME --template-body file://config_files/dr_region_cfn.yaml --region $DR_REGION
 ```
 
 ### Step 9 - Check the status of the CloudFormation stack in the DR region :
