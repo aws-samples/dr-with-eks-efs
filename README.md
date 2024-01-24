@@ -22,17 +22,18 @@ Assumption : You already configured a [default] in the AWS CLI config/credential
 git clone https://github.com/aws-samples/dr-with-eks-efs.git
 cd dr-with-eks-efs
 ```
-### Step 2 - Define primary region and the EKS cluster name :
+### Step 2 - Define the environment variables for the primary region :
+
 
 Replace the `AWS-region-code` with the desired region code (listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions)) and the `EKS-cluster-name` with a name of your choice.
 
 ```bash
-export AWS_REGION_PRIMARY=<AWS-region-code>
-export CFNstack=<Cloudformation-stack-name>
-export ClusterPrimary=<EKS-cluster-name>
+export pri_region=<Replace>
+export pri_cfn_name=<Replace>
+export pri_cluster_name=<Replace>
 ```
 
-### Step 3 - Create CloudFormation Stack in the primary region : 
+### Step 3 - Create CloudFormation Stack in the primary  region : 
 
 ```bash
 aws cloudformation create-stack --stack-name primary --template-body file://config_files/primary_region_cfn.yaml --region $AWS_REGION_PRIMARY
@@ -48,15 +49,10 @@ Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit u
 
 For easier reference you can navigate to the CloudFormation service console and see which resources are created. If you prefer to use your own values for the parameters in the stack then please use the `--parameters` option with the above command followed by `ParameterKey=KeyPairName, ParameterValue=TestKey`.
 
-### Step 5 - Set environment variables for the primary region :
+### Step 6 - Set and embed additional environment variables into the eksctl cluster config file for the primary region :
 
 ```bash
 source config_files/primary_region_env.sh
-```
-
-### Step 6 - Embed environment variables into the eksctl cluster config file for the primary region :
-
-```bash
 envsubst < config_files/cluster_primary_template.yaml > config_files/cluster_primary.yaml
 ```
 
