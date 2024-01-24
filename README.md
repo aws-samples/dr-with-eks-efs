@@ -49,7 +49,7 @@ Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit u
 
 For easier reference you can navigate to the CloudFormation service console and see which resources are created. If you prefer to use your own values for the parameters in the stack then please use the `--parameters` option with the above command followed by `ParameterKey=KeyPairName, ParameterValue=TestKey`.
 
-### Step 6 - Set and embed additional environment variables into the eksctl cluster config file for the primary region :
+### Step 6 - Set and embed additional variables into the eksctl cluster config file for the primary region :
 
 ```bash
 source config_files/pri_region_env.sh
