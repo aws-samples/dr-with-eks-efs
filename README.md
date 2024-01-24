@@ -52,7 +52,7 @@ If you prefer to use your own values for the parameters in the stack then please
 ### Step 5 - Set environment variables for the primary region :
 
 ```bash
-source config_files/env_primary.sh
+source config_files/primary_region_env.sh
 ```
 
 ### Step 6 - Embed environment variables into the eksctl cluster config file for the primary region :
