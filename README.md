@@ -36,13 +36,13 @@ export PRI_CLUSTER_NAME=<Replace>
 ### Step 3 - Create CloudFormation Stack in the primary  region : 
 
 ```bash
-aws cloudformation create-stack --stack-name primary --template-body file://config_files/primary_region_cfn.yaml --region $AWS_REGION_PRIMARY
+aws cloudformation create-stack --stack-name $PRI_CFN_NAME --template-body file://config_files/pri_region_cfn.yaml --region $PRI_REGION
 ```
 
 ### Step 4 - Check the status of the CloudFormation stack in the primary region :
 
 ```bash
-watch aws cloudformation describe-stacks --stack-name primary --query "Stacks[0].StackStatus" --output text --region $AWS_REGION_PRIMARY
+watch aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[0].StackStatus" --output text --region $PRI_REGION
 ```
 
 Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit using `CTRL + C`. 
@@ -52,8 +52,8 @@ For easier reference you can navigate to the CloudFormation service console and 
 ### Step 6 - Set and embed additional environment variables into the eksctl cluster config file for the primary region :
 
 ```bash
-source config_files/primary_region_env.sh
-envsubst < config_files/cluster_primary_template.yaml > config_files/cluster_primary.yaml
+source config_files/pri_region_env.sh
+envsubst < config_files/cluster_primary_template.yaml > config_files/pri_region_eksctl_template.yaml
 ```
 
 Cluster config manifest is configured with Kubernetes v1.28 and the worker nodes use Amazon Linux 2 OS by default. EFS CSI Driver is configured as an EKS managed addon.
