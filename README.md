@@ -24,8 +24,7 @@ cd dr-with-eks-efs
 ```
 ### Step 2 - Define the environment variables for the primary region :
 
-
-Replace the `AWS-region-code` with the desired region code (listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions)) and the `EKS-cluster-name` with a name of your choice.
+We will use a few variables during the next steps hence please replace them  with the values of your choice. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions)).
 
 ```bash
 export PRI_REGION=<Replace>
