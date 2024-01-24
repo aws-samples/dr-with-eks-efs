@@ -34,7 +34,7 @@ export ClusterPrimary=<EKS-cluster-name>
 ### Step 3 - Create CloudFormation Stack in the primary region : 
 
 ```bash
-aws cloudformation create-stack --stack-name primary --template-body file://config-files/primary_region_cfn.yml --region $AWS_REGION_PRIMARY
+aws cloudformation create-stack --stack-name primary --template-body file://config-files/primary_region_cfn.yaml --region $AWS_REGION_PRIMARY
 ```
 
 ### Step 4 - Check the status of the CloudFormation stack in the primary region :
