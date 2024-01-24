@@ -63,7 +63,7 @@ Have a look at the cluster configuration manifest file. We specify Kubernetes ve
 eksctl create cluster -f config_files/pri_region_cluster.yaml
 ```
 
-EKS cluster creation process completes in about 15 minutes. You can either start creating the cluster in disaster recovery region in a separate shell immediately (#???? below); or wait for this cluster creation process to complete before moving on to the next step.
+EKS cluster creation process completes in about 15 minutes. You can either wait or you can open a separate terminal window and move on to the next step to deploy the infrastructure in the DR region.
 
 ### Step 7 - Define the environment variables for the DR region :
 
