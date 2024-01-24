@@ -24,7 +24,7 @@ cd dr-with-eks-efs
 ```
 ### Step 2 - Define the environment variables for the primary region :
 
-We will use a few variables during the next steps. Please configure the values of your choice below. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions)).
+We will use a few variables during the next steps. Please configure the values of your choice below. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions).
 
 ```bash
 export PRI_REGION=<Replace>
