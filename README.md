@@ -112,6 +112,7 @@ Have a look at the cluster configuration manifest file. We specify Kubernetes ve
 ```bash
 eksctl create cluster -f config_files/dr_region_cluster.yaml
 ```
+
 EKS cluster creation process completes in about 15 minutes. 
 
 ---
@@ -120,6 +121,11 @@ EKS cluster creation process completes in about 15 minutes.
 > You can either wait or you can open a separate terminal window and move on to configuring cross region EFS replication.
 
 ---
+
+### Step 12 - Configuring EFS replication :
+
+```bash
+```
 
 ## Security
 
