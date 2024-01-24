@@ -22,13 +22,13 @@ Assumption : You already configured a [default] in the AWS CLI config/credential
 git clone https://github.com/aws-samples/dr-with-eks-efs.git
 cd dr-with-eks-efs
 ```
-### Step 2 - Define primary and disaster recovery regions :
+### Step 2 - Define primary region and the EKS cluster name :
 
-Configure your primary and disaster recovery regions as environment variables. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions). Replace the `AWS-region-code` below with the desired region codes that you choose from the link above.
+Configure your primary region AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions). Replace the `AWS-region-code` below with the desired region code that you choose from the link above. Replace the `EKS-cluster-name` with a name of your choice.
 
 ```bash
 export AWS_REGION_PRIMARY=<AWS-region-code>
-export AWS_REGION_DR=<AWS-region-code>
+export ClusterPrimary=<EKS-cluster-name>
 ```
 
 ### Step 3 - Create CloudFormation Stack in the primary region : 
