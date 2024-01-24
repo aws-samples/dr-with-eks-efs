@@ -65,12 +65,6 @@ eksctl create cluster -f config_files/pri_region_cluster.yaml
 
 EKS cluster creation process completes in about 15 minutes. 
 
----
-**_NOTE:_** 
-You can either wait or you can open a separate terminal window and move on to the next step to deploy the infrastructure in the DR region.
-
----
-
 > [!NOTE]  
 > You can either wait or you can open a separate terminal window and move on to the next step to deploy the infrastructure in the DR region.
 
