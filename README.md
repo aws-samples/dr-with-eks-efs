@@ -70,7 +70,7 @@ EKS cluster creation process completes in about 15 minutes. You can either start
 We will use a few variables during the next steps. Please configure the values of your choice below. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions).
 
 ```bash
-export Dr_REGION=<Replace>
+export DR_REGION=<Replace>
 export DR_CFN_NAME=<Replace>
 export DR_CLUSTER_NAME=<Replace>
 ```
