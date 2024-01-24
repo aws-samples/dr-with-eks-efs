@@ -68,7 +68,7 @@ EKS cluster creation process completes in about 15 minutes.
 ---
 
 > [!NOTE]  
-> You can either wait or you can open a separate terminal window and move on to the next step to deploy the infrastructure in the DR region.
+> You can either wait or you can open a separate terminal window and move on to deploy the infrastructure in the DR region.
 
 ---
 
