@@ -5,5 +5,3 @@ export EnvironmentNamePrimary=$(aws cloudformation describe-stacks --stack-name 
 export PrivateSubnet1Primary=$(aws cloudformation describe-stacks --stack-name $CFNstack --query "Stacks[0].Outputs[?contains(OutputKey, 'PrivateSubnet1')].OutputValue" --output text --region $AWS_REGION_PRIMARY)
 
 export PrivateSubnet2Primary=$(aws cloudformation describe-stacks --stack-name $CFNstack --query "Stacks[0].Outputs[?contains(OutputKey, 'PrivateSubnet2')].OutputValue" --output text --region $AWS_REGION_PRIMARY)
-
-export ClusterPrimary=clusterprimary
