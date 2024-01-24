@@ -71,6 +71,9 @@ You can either wait or you can open a separate terminal window and move on to th
 
 ---
 
+> [!NOTE]  
+> You can either wait or you can open a separate terminal window and move on to the next step to deploy the infrastructure in the DR region.
+
 ### Step 7 - Define the environment variables for the DR region :
 
 We will use a few variables during the next steps. Please configure the values of your choice below. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions).
