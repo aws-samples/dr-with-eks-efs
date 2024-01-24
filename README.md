@@ -61,7 +61,7 @@ Cluster config manifest is configured with Kubernetes v1.28 and the worker nodes
 ### Step 7 - Create the EKS cluster in the primary region : 
 
 ```bash
-eksctl create cluster -f config_files/cluster_primary.yaml
+eksctl create cluster -f config_files/pri_region_cluster.yaml
 ```
 
 EKS cluster creation process completes in about 15 minutes. You can either start creating the cluster in disaster recovery region in a separate shell immediately (#???? below); or wait for this cluster creation process to complete before moving on to the next step.
