@@ -69,6 +69,8 @@ Cluster config manifest is configured with Kubernetes v1.28 and the worker nodes
 eksctl create cluster -f config_files/cluster_primary.yaml
 ```
 
+EKS cluster creation process completes in about 15 minutes. You can either start creating the cluster in disaster recovery region in a separate shell immediately (#???? below); or wait for this cluster creation process to complete before moving on to the next step.
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
