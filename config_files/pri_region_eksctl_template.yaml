@@ -33,5 +33,3 @@ managedNodeGroups:
   subnets: 
     - private1
     - private2
-
-
