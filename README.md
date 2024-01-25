@@ -159,6 +159,14 @@ EOF
 
 ### Step 14 - Deploy application in the EKS cluster of the primary region :
 
+# THINGS TO ADD
+
+https://github.com/eksctl-io/eksctl/issues/6287
+
+As per our documentation on how to delete clusters here, Pod Disruption Budget policies are preventing the EBS addon from being properly removed. You should run your command with --disable-nodegroup-eviction flag. i.e.
+
+`eksctl delete cluster -f cluster.yaml --disable-nodegroup-eviction`
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
