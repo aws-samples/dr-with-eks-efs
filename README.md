@@ -32,7 +32,7 @@ export PRI_CFN_NAME=<Replace>
 export PRI_CLUSTER_NAME=<Replace>
 ```
 
-### Step 3 - Create CloudFormation Stack in the primary  region : 
+### Step 3 - Create CloudFormation Stack in the primary region : 
 
 ```bash
 aws cloudformation create-stack --stack-name $PRI_CFN_NAME --template-body file://config_files/pri_region_cfn.yaml --region $PRI_REGION
@@ -63,12 +63,13 @@ Have a look at the cluster configuration manifest file. We specify Kubernetes ve
 eksctl create cluster -f config_files/pri_region_cluster.yaml
 ```
 
-EKS cluster creation process completes in about 15 minutes. 
+EKS cluster creation process completes in about 15 minutes. Once it completes update your kubeconfig file to access the cluster by doing `aws eks update-kubeconfig --name $PRI_CLUSTER_NAME --region $PRI_REGION`
+Verify that the worker nodes status is `Ready` by doing `kubectl get nodes`.
 
 ---
 
 > [!NOTE]  
-> You can either wait or you can open a separate terminal window and move on to deploy the infrastructure in the DR region.
+> You can either wait for cluster creation or you can open a separate terminal window and move on to deploy the infrastructure in the DR region.
 
 ---
 
@@ -113,7 +114,8 @@ Have a look at the cluster configuration manifest file. We specify Kubernetes ve
 eksctl create cluster -f config_files/dr_region_cluster.yaml
 ```
 
-EKS cluster creation process completes in about 15 minutes. 
+EKS cluster creation process completes in about 15 minutes. Once it completes update your kubeconfig file to access the cluster by doing `aws eks update-kubeconfig --name $DR_CLUSTER_NAME --region $DR_REGION`
+Verify that the worker nodes status is `Ready` by doing `kubectl get nodes`.
 
 ---
 
@@ -124,8 +126,38 @@ EKS cluster creation process completes in about 15 minutes.
 
 ### Step 12 - Configuring EFS replication :
 
+Enable replication from primary to disaster recovery region. 
+
 ```bash
+aws efs update-file-system-protection --file-system-id $DR_EFS_ID --replication-overwrite-protection DISABLED --region $DR_REGION
+aws efs create-replication-configuration --source-file-system-id $PRI_EFS_ID --destinations Region=$DR_REGION,FileSystemId=$DR_EFS_ID --region $PRI_REGION
 ```
+
+Check the status of the replication by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. Once the `Status` turns to `Enabled` you can then move on to the next step.
+
+### Step 13 - Deploy Kubernetes storage class in the EKS cluster of the primary region :
+
+```bash
+cat <<EOF | kubectl apply -f -
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-sc
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: ${PRI_EFS_ID}
+  directoryPerms: "700"
+  gidRangeStart: "1000" # optional
+  gidRangeEnd: "2000" # optional
+  basePath: "/dynamic_provisioning" # optional
+  subPathPattern: "${.PVC.namespace}/${.PVC.name}" # optional
+  ensureUniqueDirectory: "false" # optional
+  reuseAccessPoint: "false" # optional
+EOF
+```
+
+### Step 14 - Deploy application in the EKS cluster of the primary region :
 
 ## Security
 
