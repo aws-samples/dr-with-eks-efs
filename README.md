@@ -108,7 +108,7 @@ envsubst < config_files/dr_region_eksctl_template.yaml > config_files/dr_region_
 
 Have a look at the cluster configuration manifest file. We specify Kubernetes version 1.28 and EFS CSI driver as an EKS managed addon.
 
-### Step 11 - Create the EKS cluster in the primary region : 
+### Step 11 - Create the EKS cluster in the disaster recovery region : 
 
 ```bash
 eksctl create cluster -f config_files/dr_region_cluster.yaml
