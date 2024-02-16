@@ -55,7 +55,7 @@ source config_files/pri_region_env.sh
 envsubst < config_files/pri_region_eksctl_template.yaml > config_files/pri_region_cluster.yaml
 ```
 
-Have a look at the cluster configuration manifest file. We specify Kubernetes version 1.28 and EFS CSI driver as an EKS managed addon.
+Have a look at the cluster configuration manifest file (`pri_region_cluster.yaml`). We specify Kubernetes version 1.28 and EFS CSI driver as an EKS managed addon.
 
 ### Step 6 - Create the EKS cluster in the primary region : 
 
