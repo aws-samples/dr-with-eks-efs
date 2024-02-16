@@ -161,6 +161,8 @@ EOF
 
 # THINGS TO ADD
 
+Need to delete EFS replication first before deleting the VPC (through CloudFormation)
+
 https://github.com/eksctl-io/eksctl/issues/6287
 
 As per our documentation on how to delete clusters here, Pod Disruption Budget policies are preventing the EBS addon from being properly removed. You should run your command with --disable-nodegroup-eviction flag. i.e.
