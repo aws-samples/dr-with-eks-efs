@@ -153,7 +153,6 @@ parameters:
   basePath: "/dynamic_provisioning" # optional
   subPathPattern: "${.PVC.namespace}/${.PVC.name}" # optional
   ensureUniqueDirectory: "false" # optional
-  reuseAccessPoint: "false" # optional
 EOF
 ```
 
