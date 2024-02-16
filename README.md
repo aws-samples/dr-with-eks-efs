@@ -161,7 +161,7 @@ EOF
 
 # THINGS TO ADD
 
-- Before deleting the VPCs, we need to delete EFS replication first
+- Before deleting the VPCs, we need to delete EFS replication first. Deleting replication takes a bit long (10 min ?)
 
 - https://github.com/eksctl-io/eksctl/issues/6287 , As per our documentation on how to delete clusters here, Pod Disruption Budget policies are preventing the EBS addon from being properly removed. You should run your command with --disable-nodegroup-eviction flag. i.e.
 
