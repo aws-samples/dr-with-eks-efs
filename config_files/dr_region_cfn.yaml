@@ -1,4 +1,4 @@
-Description:  This template deploys a VPC with two public and private subnets across two AZs. It also deploys an IGW, two NAT gateways (one per AZ) and an EFS filesystem.
+Description:  This template deploys a VPC with two public and private subnets across two AZs, an IGW, two NAT gateways (one per AZ) and an EFS filesystem.
 
 Parameters:
   EnvironmentName:
