@@ -166,6 +166,8 @@ EOF
 
 `eksctl delete cluster -f cluster.yaml --disable-nodegroup-eviction`
 
+- When I delete the deployment and PVCs, although the reclaim policy of the PV is set to DELETE by the dynamic provisioning of EFS CSI DRIVER, I see that the folders are still kept in EFS. However all the pods, pvcs and pv s are already deleted in the EKS clusters. This wont be acceptable by any customer. Ok . I needed to set the delete-access-point-root-dir to true in the efs-csi-controller.
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
