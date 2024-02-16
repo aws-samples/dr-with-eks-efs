@@ -63,7 +63,8 @@ Have a look at the cluster configuration manifest file (`pri_region_cluster.yaml
 eksctl create cluster -f config_files/pri_region_cluster.yaml
 ```
 
-EKS cluster creation process completes in about 15 minutes. Once it completes update your kubeconfig file to access the cluster by doing `aws eks update-kubeconfig --name $PRI_CLUSTER_NAME --region $PRI_REGION`
+EKS cluster creation process completes in about 15 minutes. Once it completes update your kubeconfig file to access the cluster by doing `aws eks update-kubeconfig --name $PRI_CLUSTER_NAME --region $PRI_REGION`. 
+
 Verify that the worker nodes status is `Ready` by doing `kubectl get nodes`.
 
 ---
