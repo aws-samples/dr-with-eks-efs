@@ -4,8 +4,8 @@ This project shows the steps involved to implement the solution architecture exp
 
 ## Prerequisites
 
-- A local machine which has access to AWS.
-- You need the following tools on the machine.
+- A local machine which has access to AWS
+- Following tools on the machine
 	- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
    	- [eksctl](https://eksctl.io/installation/)
   	- [kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html)
