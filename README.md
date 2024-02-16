@@ -1,6 +1,6 @@
 ## Multi Region Disaster Recovery (DR) with EKS and EFS for Stateful Workloads
 
-This project shows the steps involved to implement the solution architecture explained in this AWS blog: ....
+This project shows the steps involved to implement the solution architecture explained in this [AWS blog]()
 
 ## Prerequisites
 
