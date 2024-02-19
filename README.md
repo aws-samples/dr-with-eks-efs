@@ -70,7 +70,7 @@ Verify that the worker nodes status is `Ready` by doing `kubectl get nodes`.
 ---
 
 > [!NOTE]  
-> You can either wait for cluster creation or you can open a separate terminal window and move on to deploy the infrastructure in the DR region.
+> You can either wait for cluster creation or you can open a separate terminal and move on to deploy the infrastructure in the DR region. If you use a separate terminal then keep in mind that the variables you created in Step 1 above wont be available in that new terminal. You need to define them again as you will need to have all variables defined in the same terminal when configuring EFS replication at a later step.
 
 ---
 
@@ -134,32 +134,19 @@ aws efs update-file-system-protection --file-system-id $DR_EFS_ID --replication-
 aws efs create-replication-configuration --source-file-system-id $PRI_EFS_ID --destinations Region=$DR_REGION,FileSystemId=$DR_EFS_ID --region $PRI_REGION
 ```
 
-Check the status of the replication by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. Once the `Status` turns to `Enabled` you can then move on to the next step.
+You can check the status of the replication by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. It takes ~15 minutes for the initial replication to be completed. Once you see the `Status` as `Enabled` you can then move on to the next step.
 
 ### Step 13 - Deploy Kubernetes storage class in the EKS cluster of the primary region :
 
 ```bash
-cat <<EOF | kubectl apply -f -
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: efs-sc
-provisioner: efs.csi.aws.com
-parameters:
-  provisioningMode: efs-ap
-  fileSystemId: ${PRI_EFS_ID}
-  directoryPerms: "700"
-  gidRangeStart: "1000" # optional
-  gidRangeEnd: "2000" # optional
-  basePath: "/dynamic_provisioning" # optional
-  subPathPattern: "${.PVC.namespace}/${.PVC.name}" # optional
-  ensureUniqueDirectory: "false" # optional
-EOF
+envsubst < config_files/pri_sc.yaml | kubectl apply -f -
 ```
 
 ### Step 14 - Deploy application in the EKS cluster of the primary region :
 
 # THINGS TO ADD
+
+- Step 5 & Step 10 replace it `envsubst < test.yaml | eksctl create cluster -f -` OR with the trick mentioned here : https://www.eksworkshop.com/docs/introduction/setup/your-account/using-eksctl/
 
 - The Stack may not be the first one in the stacks list, gotta put a filter in the cloudformation watch query 
 

@@ -2,11 +2,11 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: 'primary'
-  region: 'eu-west-1'
+  name: 'secondary'
+  region: 'eu-west-2'
   version: '1.28'
   tags:
-    EnvironmentName: 'primary'
+    EnvironmentName: 'dr'
 
 iam:
   withOIDC: true
@@ -18,9 +18,9 @@ vpc:
   subnets: 
     private:
       private1:
-          id: 'subnet-078eb8dedf676a1d6'
+          id: 'subnet-09def6e1d44eb24cd'
       private2:
-          id: 'subnet-0b64edca8ec3cc4a4'
+          id: 'subnet-008c78300739fdf90'
   clusterEndpoints:
     privateAccess: true
     publicAccess: true
