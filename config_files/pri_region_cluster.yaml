@@ -1,0 +1,35 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: 'primarycluster'
+  region: 'eu-west-1'
+  version: '1.28'
+  tags:
+    EnvironmentName: 'primary'
+
+iam:
+  withOIDC: true
+
+addons:
+- name: aws-efs-csi-driver
+
+vpc:
+  subnets: 
+    private:
+      private1:
+          id: 'subnet-078eb8dedf676a1d6'
+      private2:
+          id: 'subnet-0b64edca8ec3cc4a4'
+  clusterEndpoints:
+    privateAccess: true
+    publicAccess: true
+
+managedNodeGroups:
+- name: ng
+  desiredCapacity: 2
+  instanceType: t3.medium
+  privateNetworking: true
+  subnets: 
+    - private1
+    - private2
