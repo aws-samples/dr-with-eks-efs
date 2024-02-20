@@ -138,11 +138,15 @@ You can check the status of the replication by `aws efs describe-replication-con
 
 ### Step 13 - Deploy Kubernetes storage class in the EKS cluster of the primary region :
 
+Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). 
+
 ```bash
 envsubst < config_files/pri_sc.yaml | kubectl apply -f -
 ```
 
 ### Step 14 - Deploy application in the EKS cluster of the primary region :
+
+
 
 # THINGS TO ADD
 
