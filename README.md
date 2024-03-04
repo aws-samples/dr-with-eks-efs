@@ -41,7 +41,7 @@ aws cloudformation create-stack --stack-name $PRI_CFN_NAME --template-body file:
 ### Step 4 - Check the status of the CloudFormation stack in the primary region :
 
 ```bash
-watch aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[0].StackStatus" --output text --region $PRI_REGION
+watch aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[].StackStatus" --output text --region $PRI_REGION
 ```
 
 Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit using `CTRL + C`. 
