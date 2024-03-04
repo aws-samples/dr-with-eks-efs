@@ -6,4 +6,4 @@ export DR_PRIVATE_SUBNET_1=$(aws cloudformation describe-stacks --stack-name $DR
 
 export DR_PRIVATE_SUBNET_2=$(aws cloudformation describe-stacks --stack-name $DR_CFN_NAME --query "Stacks[0].Outputs[?contains(OutputKey, 'PrivateSubnet2')].OutputValue" --output text --region $DR_REGION)
 
-export DR_EFS_ID=$(aws cloudformation describe-stacks --stack-name $DR_CFN_NAME --query "Stacks[0].Outputs[?contains(OutputKey, 'EFS')].OutputValue" --output text --region $DR_REGION)
+export DR_EFS_ID=$(aws cloudformation describe-stacks --stack-name $DR_CFN_NAME --query "Stacks[].Outputs[?contains(OutputKey, 'EFS')].OutputValue" --output text --region $DR_REGION)
