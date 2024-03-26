@@ -172,10 +172,6 @@ envsubst < config_files/dr_sc.yaml | kubectl apply -f -
 
 # THINGS TO ADD
 
-- Step 5 & Step 10 replace it `envsubst < test.yaml | eksctl create cluster -f -` OR with the trick mentioned here : https://www.eksworkshop.com/docs/introduction/setup/your-account/using-eksctl/
-
-- The Stack may not be the first one in the stacks list, gotta put a filter in the cloudformation watch query 
-
 - Before deleting the VPCs, we need to delete EFS replication first. Deleting replication takes a bit long (10 min ?)
 
 - https://github.com/eksctl-io/eksctl/issues/6287 , As per our documentation on how to delete clusters here, Pod Disruption Budget policies are preventing the EBS addon from being properly removed. You should run your command with --disable-nodegroup-eviction flag. i.e.
