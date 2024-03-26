@@ -143,6 +143,8 @@ You can check the status of the replication by `aws efs describe-replication-con
 
 Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). 
 
+Create a storage class object named as `efs-sc`.
+
 ```bash
 envsubst < config_files/pri_sc.yaml | kubectl apply -f -
 
@@ -151,7 +153,7 @@ envsubst < config_files/pri_sc.yaml | kubectl apply -f -
 Verify that the object got created successfully. 
 
 ```bash
-kubectl get storageclass ....
+kubectl get storageclass efs-sc
 
 ```
 

@@ -1,0 +1,54 @@
+#Application Manifest which is the same for both EKS clusters in both regions
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: efs-app-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: efs-app
+  name: efs-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: efs-app
+  template:
+    metadata:
+      labels:
+        app: efs-app
+    spec:
+      containers:
+      - name: web-container
+        image: httpd
+        volumeMounts:
+          - name: persistent-storage
+            mountPath: /EFS
+      volumes:
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: efs-app-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: efs-app-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http
+  selector:
+    app: efs-app
+
