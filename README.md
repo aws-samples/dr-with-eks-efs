@@ -16,14 +16,14 @@ Assumption : You already configured a [default] [profile](https://docs.aws.amazo
 
 ## Solution
 
-### Step 1 - Clone this GitHub repo to your machine :
+### Step 1 - Clone this GitHub repo to your machine
 
 ```bash
 git clone https://github.com/aws-samples/dr-with-eks-efs.git
 cd dr-with-eks-efs
 
 ```
-### Step 2 - Define the environment variables for the primary region :
+### Step 2 - Define the environment variables for the primary region
 
 We will use a few variables during the next steps. Please configure these values with your choice. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions).
 
@@ -41,7 +41,7 @@ aws cloudformation create-stack --stack-name $PRI_CFN_NAME --template-body file:
 
 ```
 
-### Step 4 - Check the status of the CloudFormation stack in the primary region :
+### Step 4 - Check the status of the CloudFormation stack in the primary region
 
 ```bash
 watch aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[].StackStatus" --output text --region $PRI_REGION
@@ -75,7 +75,7 @@ Verify that the worker nodes status is `Ready` by doing `kubectl get nodes`.
 
 ---
 
-### Step 6 - Define the environment variables for the DR region :
+### Step 6 - Define the environment variables for the DR region
 
 We will use a few variables during the next steps. Please configure the values of your choice below. AWS region codes are listed [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions).
 
@@ -86,14 +86,14 @@ export DR_CLUSTER_NAME=<Replace with your choice>
 
 ```
 
-### Step 7 - Create CloudFormation Stack in the DR region : 
+### Step 7 - Create CloudFormation Stack in the DR region
 
 ```bash
 aws cloudformation create-stack --stack-name $DR_CFN_NAME --template-body file://config_files/dr_region_cfn.yaml --region $DR_REGION
 
 ```
 
-### Step 8 - Check the status of the CloudFormation stack in the DR region :
+### Step 8 - Check the status of the CloudFormation stack in the DR region
 
 ```bash
 watch aws cloudformation describe-stacks --stack-name $DR_CFN_NAME --query "Stacks[0].StackStatus" --output text --region $DR_REGION
@@ -104,9 +104,9 @@ Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit u
 
 For easier reference you can navigate to the CloudFormation service console and see which resources are created. If you prefer to use your own values for the parameters in the stack then please use the `--parameters` option with the above command followed by `ParameterKey=KeyPairName, ParameterValue=TestKey`.
 
-### Step 9 - Set and embed additional variables into the eksctl cluster config file for the DR region :
+### Step 9 - Set and embed additional variables into the eksctl cluster config file for the DR region
 
-Have a look at the cluster configuration manifest file (`pri_region_cluster.yaml`). We specify Kubernetes version 1.28 and EFS CSI driver as an EKS managed addon.
+Have a look at the cluster configuration manifest file (`dr_region_cluster.yaml`). We specify Kubernetes version 1.28 and EFS CSI driver as an EKS managed addon.
 
 Set and embed additional variables into manifest file and deploy the cluster to the primary region.
 
@@ -127,7 +127,7 @@ Verify that the worker nodes status is `Ready` by doing `kubectl get nodes`.
 
 ---
 
-### Step 12 - Configuring EFS replication :
+### Step 10 - Configuring EFS replication :
 
 Enable replication from primary to disaster recovery region. 
 
@@ -139,35 +139,108 @@ aws efs create-replication-configuration --source-file-system-id $PRI_EFS_ID --d
 
 You can check the status of the replication by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. It takes ~15 minutes for the initial replication to be completed. Once you see the `Status` as `Enabled` you can then move on to the next step.
 
-### Step 13 - Deploy Kubernetes storage class in the EKS cluster of the primary region :
+### Step 11 - Deploy Kubernetes Storage Class in the EKS cluster of the primary region
 
 Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). 
 
-Create a storage class object named as `efs-sc`.
+Create a Storage Class resource named as `efs-sc`.
 
 ```bash
 envsubst < config_files/pri_sc.yaml | kubectl apply -f -
 
 ```
 
-Verify that the object got created successfully. 
+Verify that the resource got created successfully. 
 
 ```bash
 kubectl get storageclass efs-sc
 
 ```
 
-### Step 14 - Deploy Kubernetes storage class in the EKS cluster of the secondary region :
+### Step 12 - Deploy application in the EKS cluster of the primary region :
 
 Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). 
+
+Below command will create a Deployment `efs-app` and a Persistent Volume Claim (PVC) `efs-app-claim` that leverages the Storage Class we created in the previous step. It also exposes the Deployment through an external load balancer, which is an AWS Elastic Load Balancer (ELB) in this case. 
+
+```bash
+kubectl apply -f config_files/application.yaml
+
+```
+
+Verify that the resource got created successfully. 
+
+```bash
+kubectl get deployment,pvc,svc
+
+```
+
+---
+
+> [!NOTE]  
+> It may take a few minutes for the load balancer to become operational and the targets to be healthy.
+
+---
+
+At this stage you can try to access the application but it will not be successful because we did not create an index.html in the respective folder which is `/usr/local/apache2/htdocs/`. Let' s do that next.
+
+### Step 13 - Create index.html file in Amazon EFS
+
+Since the folder `/usr/local/apache2/htdocs/` is using a PVC in the Deployment spec, that PVC is basically consuming Amazon EFS. Hence when we create the index.html it will be available for all the workloads which uses the same PVC thanks to the [subPathPattern](https://github.com/kubernetes-sigs/aws-efs-csi-driver/blob/master/docs/README.md#features) feature of the Amazon EFS CSI Driver. 
+
+Below command will pick randomly one of the Pods in the Deployment and get shell access.
+
+```bash
+Pod=$(kubectl get pods | grep "efs-app" | awk '{print $1}')
+kubectl exec -it $Pod -- sh
+```
+
+Following command will just create an index.html file in the right path with a simple content. 
+
+```bash
+echo "Let's test EFS across regions !" > /usr/local/apache2/htdocs/index.html
+exit
+
+```
+
+### Step 14 - Test access to the application
+
+Grab the DNS name of the AWS ELB which exposes the application.
+
+```bash
+export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
+```
+
+In your browser navigate to the DNS name and verify that you can see the page with "Let's test EFS across regions !" .
+
+
+### Step 15 - Deploy Kubernetes storage class and application in the EKS cluster of the DR region
+
+In this task we will implement steps 11 & 12 above for the DR region.
 
 ```bash
 envsubst < config_files/dr_sc.yaml | kubectl apply -f -
 
 ```
 
-### Step 14 - Deploy application in the EKS cluster of the primary region :
+Verify that the resource got created successfully. 
 
+```bash
+kubectl get storageclass efs-sc
+
+```
+
+```bash
+kubectl apply -f config_files/application.yaml
+
+```
+
+Verify that the resource got created successfully. 
+
+```bash
+kubectl get deployment,pvc,svc
+
+```
 
 
 # THINGS TO ADD
