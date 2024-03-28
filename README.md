@@ -149,7 +149,7 @@ You can check the status of the replication by `aws efs describe-replication-con
 
 ### Step 11 - Deploy Kubernetes Storage Class in the EKS cluster of the primary region
 
-Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). 
+Make sure you are in primary cluster kubectl context by using `kubectl config use-context <context-name>` or `kubectx <context-name>`. 
 
 Create a Storage Class resource named as `efs-sc`.
 
@@ -167,7 +167,7 @@ kubectl get storageclass efs-sc
 
 ### Step 12 - Deploy application in the EKS cluster of the primary region :
 
-Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). 
+Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`. 
 
 Below command will create a Deployment `efs-app` and a Persistent Volume Claim (PVC) `efs-app-claim` that leverages the Storage Class we created in the previous step. It also exposes the Deployment through an external load balancer, which is an AWS Elastic Load Balancer (ELB) in this case. 
 
@@ -286,7 +286,7 @@ You can check the status of the by `aws efs describe-replication-configurations 
 
 ### Step 17 - Update the web page content and verify access
 
-Make sure you are in the Kubernetes cluster context of the DR region by using `kubectl config use-context ...` or `kubectx`). 
+Make sure you are in the Kubernetes cluster context of the DR region by using `kubectl config use-context ...` or `kubectx`. 
 
 ```bash
 Pod=$(kubectl get pods | grep "efs-app" | awk '{print $1}')
@@ -396,7 +396,7 @@ At this stage the file system in the DR region is read-only.
 
 Lastly, let' s check the access to the web page in the DR region. 
 
-Make sure you are in the DR cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). Grab the DNS name of the AWS ELB which exposes the application.
+Make sure you are in the DR cluster kubectl context by using `kubectl config use-context ...` or `kubectx`. Grab the DNS name of the AWS ELB which exposes the application.
 
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
@@ -409,7 +409,8 @@ Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and
 
 ## Clean-up
 
-
+Delete 
+aws efs --region $PRI_REGION delete-replication-configuration --source-file-system-id $DR_EFS_ID
 
 
 
