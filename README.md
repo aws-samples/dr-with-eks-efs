@@ -313,7 +313,7 @@ Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and
 
 ### Step 18 - Test failback to the primary region
 
-In this step we will perform a [failback](https://docs.aws.amazon.com/efs/latest/ug/replication-use-cases.html#replication-fail-over) to the primary region. To replicate the changes made to your replica f(EFS in DR region) during failover, create a replication configuration on the replica file system, where the primary file system (EFS in primary region) is the replication destination.  
+In this step we will perform a [failback](https://docs.aws.amazon.com/efs/latest/ug/replication-use-cases.html#replication-fail-over) to the primary region. To replicate the changes made to your replica file system (EFS in DR region) during failover, create a replication configuration on the replica file system, where the primary file system (EFS in primary region) is the replication destination.  
 
 ```bash
 aws efs update-file-system-protection --file-system-id $PRI_EFS_ID --replication-overwrite-protection DISABLED --region $PRI_REGION
