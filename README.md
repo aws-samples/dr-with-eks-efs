@@ -71,7 +71,7 @@ Verify that the worker nodes status is `Ready` by doing `kubectl get nodes`.
 ---
 
 > [!NOTE]  
-> You can either wait for cluster creation or you can open a separate terminal and move on to deploy the infrastructure in the DR region. If you use a separate terminal then keep in mind that the variables you created in Step 1 above wont be available in that new terminal. You need to define them again as you will need to have all variables defined in the same terminal when configuring EFS replication at a later step.
+> You can either wait for cluster creation or you can open a separate terminal and move on to deploy the infrastructure in the DR region. If you use a separate terminal then keep in mind that the variables you created in Step 1 and 5 above wont be available in that new terminal. You need to define them again as you will need to have all variables defined in the same terminal when configuring EFS replication at a later step.
 
 ---
 
@@ -123,7 +123,7 @@ Verify that the worker nodes status is `Ready` by doing `kubectl get nodes`.
 ---
 
 > [!NOTE]  
-> You can either wait or you can open a separate terminal window and move on to configuring cross region EFS replication.
+> You can either wait for cluster creation or you can open a separate terminal window and move on to configuring cross region EFS replication. If you use a separate terminal then keep in mind that the variables you created in Step 1, 5 and 9 above wont be available in that new terminal. 
 
 ---
 
@@ -167,7 +167,7 @@ kubectl get storageclass efs-sc
 
 ### Step 12 - Deploy application in the EKS cluster of the primary region :
 
-Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`. 
+Make sure you are in primary cluster kubectl context by using `kubectl config use-context <context-name>` or `kubectx <context-name>`. 
 
 Below command will create a Deployment `efs-app` and a Persistent Volume Claim (PVC) `efs-app-claim` that leverages the Storage Class we created in the previous step. It also exposes the Deployment through an external load balancer, which is an AWS Elastic Load Balancer (ELB) in this case. 
 
@@ -286,7 +286,7 @@ You can check the status of the by `aws efs describe-replication-configurations 
 
 ### Step 17 - Update the web page content and verify access
 
-Make sure you are in the Kubernetes cluster context of the DR region by using `kubectl config use-context ...` or `kubectx`. 
+Make sure you are in the Kubernetes cluster context of the DR region by using `kubectl config use-context <context-name>` or `kubectx <context-name>`.
 
 ```bash
 Pod=$(kubectl get pods | grep "efs-app" | awk '{print $1}')
@@ -322,7 +322,7 @@ aws efs create-replication-configuration --source-file-system-id $DR_EFS_ID --de
 
 You can check the status of the replication by `aws efs describe-replication-configurations --file-system-id $DR_EFS_ID --region $DR_REGION`. You can also do `watch aws efs...` as well. It takes several minutes for the replication to complete. Once you see the `Status` as `Enabled` you can then move on to the below step.
 
-At this stage you can check the access to the web page in the primary region. Make sure you are in the primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). Grab the DNS name of the AWS ELB which exposes the application.
+At this stage you can check the access to the web page in the primary region. Make sure you are in the primary cluster kubectl context by using `kubectl config use-context <context-name>` or `kubectx <context-name>`. Grab the DNS name of the AWS ELB which exposes the application.
 
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
@@ -349,11 +349,9 @@ aws efs --region $PRI_REGION delete-replication-configuration --source-file-syst
 
 You can check the status of the by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. You can also do `watch aws efs...` as well. The process takes several minutes to complete. Once the output states `No replications found.` you can move on to the below step.
 
-
-
 At this stage the file system in the primary region is writable. Hence we can update the content of the web page. 
 
-Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). 
+Make sure you are in primary cluster kubectl context by using `kubectl config use-context <context-name>` or `kubectx <context-name>`. 
 
 Let' s randomly pick one of the Pods in the Deployment and get shell access.
 
@@ -370,7 +368,7 @@ exit
 
 ```
 
-You can check the access to the web page in the primary region. Make sure you are in the primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). Grab the DNS name of the AWS ELB which exposes the application.
+You can check the access to the web page in the primary region. Make sure you are in the primary cluster kubectl context by using `kubectl config use-context <context-name>` or `kubectx <context-name>`. Grab the DNS name of the AWS ELB which exposes the application.
 
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
@@ -396,7 +394,7 @@ At this stage the file system in the DR region is read-only.
 
 Lastly, let' s check the access to the web page in the DR region. 
 
-Make sure you are in the DR cluster kubectl context by using `kubectl config use-context ...` or `kubectx`. Grab the DNS name of the AWS ELB which exposes the application.
+Make sure you are in the DR cluster kubectl context by using `kubectl config use-context <context-name>` or `kubectx <context-name>`. Grab the DNS name of the AWS ELB which exposes the application.
 
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
@@ -409,20 +407,37 @@ Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and
 
 ## Clean-up
 
-Delete 
-aws efs --region $PRI_REGION delete-replication-configuration --source-file-system-id $DR_EFS_ID
+- Delete the replication configuration. 
+
+```bash
+aws efs --region $PRI_REGION delete-replication-configuration --source-file-system-id $PRI_EFS_ID
+```
+
+You can check the status of the by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. You can also do `watch aws efs...` as well. The process takes several minutes to complete. Once the output states `No replications found.` you can move on to the below step.
+
+- Delete the application in the DR region. Make sure you are in the DR cluster kubectl context by using `kubectl config use-context <context-name>` or `kubectx <context-name>`.
+
+```bash
+kubectl delete -f config_files/application.yaml
+kubectl delete storageclass efs-sc
+
+```
+
+- Delete the EKS cluster in the DR region.
+
+```bash
+envsubst < config_files/dr_region_eksctl_template.yaml | eksctl delete cluster --disable-nodegroup-eviction -f - 
+```
+
 
 
 
 # THINGS TO ADD
 
-- Before deleting the VPCs, we need to delete EFS replication first. Deleting replication takes a bit long (10 min ?)
-
 - https://github.com/eksctl-io/eksctl/issues/6287 , As per our documentation on how to delete clusters here, Pod Disruption Budget policies are preventing the EBS addon from being properly removed. You should run your command with --disable-nodegroup-eviction flag. i.e.
 
 `eksctl delete cluster -f cluster.yaml --disable-nodegroup-eviction`
 
-- When I delete the deployment and PVCs, although the reclaim policy of the PV is set to DELETE by the dynamic provisioning of EFS CSI DRIVER, I see that the folders are still kept in EFS. However all the pods, pvcs and pv s are already deleted in the EKS clusters. This wont be acceptable by any customer. Ok . I needed to set the delete-access-point-root-dir to true in the efs-csi-controller.
 
 ## Security
 
