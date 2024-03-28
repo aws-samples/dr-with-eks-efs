@@ -127,9 +127,9 @@ Verify that the worker nodes status is `Ready` by doing `kubectl get nodes`.
 
 ---
 
-### Step 10 - Configuring EFS replication :
+### Step 10 - Enable EFS replication
 
-Enable replication from primary to disaster recovery region. 
+Configure replication from primary to DR region. 
 
 ```bash
 aws efs update-file-system-protection --file-system-id $DR_EFS_ID --replication-overwrite-protection DISABLED --region $DR_REGION
@@ -137,7 +137,15 @@ aws efs create-replication-configuration --source-file-system-id $PRI_EFS_ID --d
 
 ```
 
-You can check the status of the replication by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. It takes ~15 minutes for the initial replication to be completed. Once you see the `Status` as `Enabled` you can then move on to the next step.
+You can check the status of the replication by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. You can also do `watch aws efs...` as well. It takes ~15 minutes for the initial replication to complete. Once you see the `Status` as `Enabled` you can then move on to the next step. 
+
+---
+
+> [!NOTE]  
+> Note that the **file system in the DR region becomes read-only** once the replication status is `Enabled`.
+
+---
+
 
 ### Step 11 - Deploy Kubernetes Storage Class in the EKS cluster of the primary region
 
@@ -175,6 +183,8 @@ kubectl get deployment,pvc,svc
 
 ```
 
+The container image we use in the Deployment is a simple [Apache Web Server](https://httpd.apache.org/).
+
 ---
 
 > [!NOTE]  
@@ -182,20 +192,20 @@ kubectl get deployment,pvc,svc
 
 ---
 
-At this stage you can try to access the application but it will not be successful because we did not create an index.html in the respective folder which is `/usr/local/apache2/htdocs/`. Let' s do that next.
+At this stage you can try to access the web server but it will not be successful because we did not create an index.html in the respective folder, which is `/usr/local/apache2/htdocs/`, that the web server requires. Let' s do that next.
 
-### Step 13 - Create index.html file in Amazon EFS
+### Step 13 - Create web page content in Amazon EFS
 
-Since the folder `/usr/local/apache2/htdocs/` is using a PVC in the Deployment spec, that PVC is basically consuming Amazon EFS. Hence when we create the index.html it will be available for all the workloads which uses the same PVC thanks to the [subPathPattern](https://github.com/kubernetes-sigs/aws-efs-csi-driver/blob/master/docs/README.md#features) feature of the Amazon EFS CSI Driver. 
+Since the folder `/usr/local/apache2/htdocs/` is using a PVC in the Deployment spec, that PVC is basically consuming Amazon EFS in the background. Hence when we create the index.html it will be available for all the workloads which uses the **same file path** on the EFS thanks to the [subPathPattern](https://github.com/kubernetes-sigs/aws-efs-csi-driver/blob/master/docs/README.md#features) feature of the Amazon EFS CSI Driver. 
 
-Below command will pick randomly one of the Pods in the Deployment and get shell access.
+Let' s randomly pick one of the Pods in the Deployment and get shell access.
 
 ```bash
 Pod=$(kubectl get pods | grep "efs-app" | awk '{print $1}')
 kubectl exec -it $Pod -- sh
 ```
 
-Following command will just create an index.html file in the right path with a simple content. 
+Create an index.html file in the respective folder with simple content.
 
 ```bash
 echo "Let's test EFS across regions !" > /usr/local/apache2/htdocs/index.html
@@ -209,6 +219,8 @@ Grab the DNS name of the AWS ELB which exposes the application.
 
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
+echo $APPURL
+
 ```
 
 In your browser navigate to the DNS name and verify that you can see the page with "Let's test EFS across regions !" .
@@ -216,7 +228,7 @@ In your browser navigate to the DNS name and verify that you can see the page wi
 
 ### Step 15 - Deploy Kubernetes storage class and application in the EKS cluster of the DR region
 
-In this task we will implement steps 11 & 12 above for the DR region.
+In this task we will implement steps 11 & 12 & 13 above for the DR region.
 
 ```bash
 envsubst < config_files/dr_sc.yaml | kubectl apply -f -
@@ -241,6 +253,164 @@ Verify that the resource got created successfully.
 kubectl get deployment,pvc,svc
 
 ```
+
+Grab the DNS name of the AWS ELB which exposes the application.
+
+```bash
+export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
+echo $APPURL
+
+```
+
+In your browser navigate to the DNS name and verify that you can see the page with "Let's test EFS across regions !" .
+
+---
+
+> [!NOTE]  
+> Thanks to EFS cross-region replication the index.html is already synced to the DR region. Hence you are able to see the same content on the web page.
+
+---
+
+### Step 16 - Test failover to the DR region
+
+In this step we will perform a [failover](https://docs.aws.amazon.com/efs/latest/ug/replication-use-cases.html#replication-fail-over) to the DR region. We first need to delete the replication configuration on the EFS in DR region to make it writable since it has been read-only until now. Deleting a replication configuration and changing the destination file system to be writeable can take several minutes to complete.
+
+Use the following command to delete the replication configuration. Notice that you must use the primary region EFS as source EFS ID.
+
+```bash
+aws efs --region $DR_REGION delete-replication-configuration --source-file-system-id $PRI_EFS_ID
+```
+
+You can check the status of the by `aws efs describe-replication-configurations --file-system-id $DR_EFS_ID --region $DR_REGION`. You can also do `watch aws efs...` as well. The process takes several minutes to complete. Once the output states `No replications found.` you can move on to the next step.
+
+
+### Step 17 - Update the web page content and verify access
+
+Make sure you are in the Kubernetes cluster context of the DR region by using `kubectl config use-context ...` or `kubectx`). 
+
+```bash
+Pod=$(kubectl get pods | grep "efs-app" | awk '{print $1}')
+kubectl exec -it $Pod -- sh
+```
+
+Create an index.html file in the respective folder with simple content.
+
+```bash
+echo "We have now successfully failed over to the DR region!" > /usr/local/apache2/htdocs/index.html
+exit
+
+```
+
+Grab the DNS name of the AWS ELB which exposes the application.
+
+```bash
+export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
+echo $APPURL
+
+```
+
+Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and verify that you can see the page with "We have now successfully failed over to the DR region!" . 
+
+### Step 18 - Test failback to the primary region
+
+In this step we will perform a [failback](https://docs.aws.amazon.com/efs/latest/ug/replication-use-cases.html#replication-fail-over) to the primary region. To replicate the changes made to your replica f(EFS in DR region) during failover, create a replication configuration on the replica file system, where the primary file system (EFS in primary region) is the replication destination.  
+
+```bash
+aws efs update-file-system-protection --file-system-id $PRI_EFS_ID --replication-overwrite-protection DISABLED --region $PRI_REGION
+aws efs create-replication-configuration --source-file-system-id $DR_EFS_ID --destinations Region=$PRI_REGION,FileSystemId=$PRI_EFS_ID --region $DR_REGION
+```
+
+You can check the status of the replication by `aws efs describe-replication-configurations --file-system-id $DR_EFS_ID --region $DR_REGION`. You can also do `watch aws efs...` as well. It takes several minutes for the replication to complete. Once you see the `Status` as `Enabled` you can then move on to the below step.
+
+At this stage you can check the access to the web page in the primary region. Make sure you are in the primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). Grab the DNS name of the AWS ELB which exposes the application.
+
+```bash
+export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
+echo $APPURL
+
+```
+
+Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and verify that you can see the page with "We have now successfully failed over to the DR region!" ; since this is the latest content on the web page. 
+
+Currently, the file system in the DR region is writable and the file system in primary region is read-only. We will complete the failover to the primary region by deleting the replication configuration. 
+
+---
+
+> [!NOTE]  
+> It is important to understand that once the replication configuration is deleted both file systems become writable. Hence in a real production environment you may want to make sure that the application stack in the DR region does not try to write data.
+
+---
+
+Now use the following command to delete the replication configuration in the DR region. Notice that you must use the DR region EFS as source EFS ID.
+
+```bash
+aws efs --region $PRI_REGION delete-replication-configuration --source-file-system-id $DR_EFS_ID
+```
+
+You can check the status of the by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. You can also do `watch aws efs...` as well. The process takes several minutes to complete. Once the output states `No replications found.` you can move on to the below step.
+
+
+
+At this stage the file system in the primary region is writable. Hence we can update the content of the web page. 
+
+Make sure you are in primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). 
+
+Let' s randomly pick one of the Pods in the Deployment and get shell access.
+
+```bash
+Pod=$(kubectl get pods | grep "efs-app" | awk '{print $1}')
+kubectl exec -it $Pod -- sh
+```
+
+Create an index.html file in the respective folder with simple content.
+
+```bash
+echo "We are back on the primary region !" > /usr/local/apache2/htdocs/index.html
+exit
+
+```
+
+You can check the access to the web page in the primary region. Make sure you are in the primary cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). Grab the DNS name of the AWS ELB which exposes the application.
+
+```bash
+export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
+echo $APPURL
+
+```
+
+Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and verify that you can see the page with "We are back on the primary region !".
+
+You can now create a replication configuration to start replicating data to the filesystem in the DR region. Just like we did back in step #10 above.
+
+Configure replication from primary to DR region. 
+
+```bash
+aws efs update-file-system-protection --file-system-id $DR_EFS_ID --replication-overwrite-protection DISABLED --region $DR_REGION
+aws efs create-replication-configuration --source-file-system-id $PRI_EFS_ID --destinations Region=$DR_REGION,FileSystemId=$DR_EFS_ID --region $PRI_REGION
+
+```
+
+You can check the status of the replication by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. You can also do `watch aws efs...` as well. It takes several minutes for this process to complete. Once you see the `Status` as `Enabled` you can then move on to the next step.
+
+At this stage the file system in the DR region is read-only. 
+
+Lastly, let' s check the access to the web page in the DR region. 
+
+Make sure you are in the DR cluster kubectl context by using `kubectl config use-context ...` or `kubectx`). Grab the DNS name of the AWS ELB which exposes the application.
+
+```bash
+export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
+echo $APPURL
+
+```
+
+Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and verify that you can see the page with "We are back on the primary region !".
+
+
+## Clean-up
+
+
+
 
 
 # THINGS TO ADD
