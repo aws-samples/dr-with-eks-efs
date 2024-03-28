@@ -34,7 +34,7 @@ export PRI_CLUSTER_NAME=<Replace with your choice>
 
 ```
 
-### Step 3 - Create CloudFormation Stack in the primary region : 
+### Step 3 - Create CloudFormation stack in the primary region : 
 
 ```bash
 aws cloudformation create-stack --stack-name $PRI_CFN_NAME --template-body file://config_files/pri_region_cfn.yaml --region $PRI_REGION
@@ -86,7 +86,7 @@ export DR_CLUSTER_NAME=<Replace with your choice>
 
 ```
 
-### Step 7 - Create CloudFormation Stack in the DR region
+### Step 7 - Create CloudFormation stack in the DR region
 
 ```bash
 aws cloudformation create-stack --stack-name $DR_CFN_NAME --template-body file://config_files/dr_region_cfn.yaml --region $DR_REGION
@@ -407,7 +407,7 @@ Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and
 
 ## Clean-up
 
-- Delete the replication configuration. 
+- Delete the replication configuration
 
 ```bash
 aws efs --region $PRI_REGION delete-replication-configuration --source-file-system-id $PRI_EFS_ID
@@ -423,21 +423,55 @@ kubectl delete storageclass efs-sc
 
 ```
 
-- Delete the EKS cluster in the DR region.
+- Delete the EKS cluster in the DR region
 
 ```bash
 envsubst < config_files/dr_region_eksctl_template.yaml | eksctl delete cluster --disable-nodegroup-eviction -f - 
 ```
 
+- Delete the Cloudformation stack in the DR region
 
+```bash
+aws cloudformation delete-stack --stack-name $DR_CFN_NAME --region $DR_REGION
+```
 
+Verify the stack deletion using the following command. 
 
-# THINGS TO ADD
+```bash
+watch aws cloudformation describe-stacks --stack-name $DR_CFN_NAME --query "Stacks[].StackStatus" --output text --region $DR_REGION
 
-- https://github.com/eksctl-io/eksctl/issues/6287 , As per our documentation on how to delete clusters here, Pod Disruption Budget policies are preventing the EBS addon from being properly removed. You should run your command with --disable-nodegroup-eviction flag. i.e.
+```
 
-`eksctl delete cluster -f cluster.yaml --disable-nodegroup-eviction`
+Once the output shows `...Stack with id ... does not exist` you can move on to the next step. Exit using `CTRL + C`. 
 
+- Delete the application in the primary region. Make sure you are in the primary cluster kubectl context by using `kubectl config use-context <context-name>` or `kubectx <context-name>`.
+
+```bash
+kubectl delete -f config_files/application.yaml
+kubectl delete storageclass efs-sc
+
+```
+
+- Delete the EKS cluster in the primary region.
+
+```bash
+envsubst < config_files/pri_region_eksctl_template.yaml | eksctl delete cluster --disable-nodegroup-eviction -f - 
+```
+
+- Delete the Cloudformation stack in the primary region
+
+```bash
+aws cloudformation delete-stack --stack-name $PRI_CFN_NAME --region $PRI_REGION
+```
+
+Verify the stack deletion using the following command. 
+
+```bash
+watch aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[].StackStatus" --output text --region $PRI_REGION
+
+```
+
+Once the output shows `...Stack with id ... does not exist` you can move on to the next step. Exit using `CTRL + C`. 
 
 ## Security
 
