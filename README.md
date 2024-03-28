@@ -337,7 +337,7 @@ Currently, the file system in the DR region is writable and the file system in p
 ---
 
 > [!NOTE]  
-> It is important to understand that once the replication configuration is deleted both file systems become writable. Hence in a real production environment you may want to make sure that the application stack in the DR region does not try to write data.
+> It is important to understand that once the replication configuration is deleted both file systems become writable. Hence in a real production environment you may want to make sure that the application stack in the DR region does not try to write data. You can achieve this by performing this step in a coordinated fashion.
 
 ---
 
