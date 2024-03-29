@@ -471,7 +471,7 @@ watch aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Sta
 
 ```
 
-Once the output shows `...Stack with id ... does not exist` you can move on to the next step. Exit using `CTRL + C`. 
+Once the output shows `...Stack with id ... does not exist` you can exit using `CTRL + C`. 
 
 ## Security
 
