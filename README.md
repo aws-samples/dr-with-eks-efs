@@ -201,7 +201,7 @@ Since the folder `/usr/local/apache2/htdocs/` is using a PVC in the Deployment s
 Let' s randomly pick one of the Pods in the Deployment and get shell access.
 
 ```bash
-Pod=$(kubectl get pods | grep "efs-app" | awk '{print $1}')
+Pod=$(kubectl get pods | grep "efs-app" | awk 'NR==1{print $1}')
 kubectl exec -it $Pod -- sh
 ```
 
@@ -289,7 +289,7 @@ You can check the status of the by `aws efs describe-replication-configurations 
 Make sure you are in the Kubernetes cluster context of the DR region by using `kubectl config use-context <context-name>` or `kubectx <context-name>`.
 
 ```bash
-Pod=$(kubectl get pods | grep "efs-app" | awk '{print $1}')
+Pod=$(kubectl get pods | grep "efs-app" | awk 'NR==1{print $1}')
 kubectl exec -it $Pod -- sh
 ```
 
