@@ -356,7 +356,7 @@ Make sure you are in primary cluster kubectl context by using `kubectl config us
 Let' s randomly pick one of the Pods in the Deployment and get shell access.
 
 ```bash
-Pod=$(kubectl get pods | grep "efs-app" | awk '{print $1}')
+Pod=$(kubectl get pods | grep "efs-app" | awk 'NR==1{print $1}')
 kubectl exec -it $Pod -- sh
 ```
 
