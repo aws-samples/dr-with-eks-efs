@@ -1,6 +1,6 @@
 ## Multi Region Disaster Recovery (DR) with EKS and EFS for Stateful Workloads
 
-This project shows the steps involved to implement the solution architecture explained in this AWS blog: [Multi Region Disaster Recovery with EKS and EFS for Stateful Workloads]().
+This project shows the steps involved to implement the solution architecture explained in this AWS blog: [Multi Region Disaster Recovery with EKS and EFS for Stateful Workloads](https://aws.amazon.com/blogs/containers/multi-region-disaster-recovery-with-amazon-eks-and-amazon-efs-for-stateful-workloads/).
 
 ## Prerequisites
 
@@ -164,6 +164,13 @@ Verify that the resource got created successfully.
 kubectl get storageclass efs-sc
 
 ```
+
+---
+
+> [!NOTE]  
+> As described in the considerations section of the [AWS Blog post](https://aws.amazon.com/blogs/containers/multi-region-disaster-recovery-with-amazon-eks-and-amazon-efs-for-stateful-workloads/), if you do not explicitly configure the `uid` and `gid` in the StorageClass manifest then the [EFS CSI Driver assigns a value](https://github.com/kubernetes-sigs/aws-efs-csi-driver/blob/master/docs/README.md#storage-class-parameters-for-dynamic-provisioning) from the `gidRange` in order. This is the case for the manifest that we just used above. Hence if you do not create the PVCs in the same order (or if there are already created PVCs in different amounts) in both the primary and DR regions then there will be a `uid` mismatch for the same application' s PVC across regions. Keep this in mind when deploying applications in your clusters across regions.
+
+---
 
 ### Step 12 - Deploy application in the EKS cluster of the primary region :
 
