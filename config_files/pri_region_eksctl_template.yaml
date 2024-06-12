@@ -22,7 +22,6 @@ vpc:
       private2:
           id: '${PRI_PRIVATE_SUBNET_2}'
   clusterEndpoints:
-    privateAccess: true
     publicAccess: true
 
 managedNodeGroups:
