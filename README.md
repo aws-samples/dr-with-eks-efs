@@ -235,6 +235,8 @@ In your browser navigate to the DNS name and verify that you can see the page wi
 
 ### Step 15 - Deploy Kubernetes storage class and application in the EKS cluster of the DR region
 
+Make sure you are in secondary cluster kubectl context by using kubectl config use-context <context-name> or kubectx <context-name>.
+
 In this task we will implement steps 11 & 12 & 13 above for the DR region.
 
 ```bash
