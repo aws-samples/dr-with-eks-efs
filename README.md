@@ -137,7 +137,7 @@ aws efs create-replication-configuration --source-file-system-id $PRI_EFS_ID --d
 
 ```
 
-You can check the status of the replication by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. You can also do `watch aws efs...` as well. It takes ~15 minutes for the initial replication to complete. Once you see the `Status` as `Enabled` you can then move on to the next step. 
+You can check the status of the replication by `watch aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION --query 'Replications[].Destinations[].Status' --output text`. It takes ~15 minutes for the initial replication to complete. Once you see the `Status` as `Enabled` you can then move on to the next step. 
 
 ---
 
