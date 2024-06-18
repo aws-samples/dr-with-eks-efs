@@ -31,21 +31,18 @@ We will use a few variables during the next steps. Please configure these values
 export PRI_REGION=<Replace with your choice>
 export PRI_CFN_NAME=<Replace with your choice>
 export PRI_CLUSTER_NAME=<Replace with your choice>
-
 ```
 
 ### Step 3 - Create CloudFormation stack in the primary region : 
 
 ```bash
 aws cloudformation create-stack --stack-name $PRI_CFN_NAME --template-body file://config_files/pri_region_cfn.yaml --region $PRI_REGION
-
 ```
 
 ### Step 4 - Check the status of the CloudFormation stack in the primary region
 
 ```bash
 watch aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[].StackStatus" --output text --region $PRI_REGION
-
 ```
 
 Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit using `CTRL + C`. 
@@ -61,7 +58,6 @@ Set and embed additional variables into manifest file and deploy the cluster to 
 ```bash
 source config_files/pri_region_env.sh
 envsubst < config_files/pri_region_eksctl_template.yaml | eksctl create cluster -f -
-
 ```
 
 EKS cluster creation process completes in about 15 minutes. Once it completes update your kubeconfig file to access the cluster by doing `aws eks update-kubeconfig --name $PRI_CLUSTER_NAME --region $PRI_REGION`. 
@@ -83,21 +79,18 @@ We will use a few variables during the next steps. Please configure the values o
 export DR_REGION=<Replace with your choice>
 export DR_CFN_NAME=<Replace with your choice>
 export DR_CLUSTER_NAME=<Replace with your choice>
-
 ```
 
 ### Step 7 - Create CloudFormation stack in the DR region
 
 ```bash
 aws cloudformation create-stack --stack-name $DR_CFN_NAME --template-body file://config_files/dr_region_cfn.yaml --region $DR_REGION
-
 ```
 
 ### Step 8 - Check the status of the CloudFormation stack in the DR region
 
 ```bash
 watch aws cloudformation describe-stacks --stack-name $DR_CFN_NAME --query "Stacks[0].StackStatus" --output text --region $DR_REGION
-
 ```
 
 Once the output shows `CREATE_COMPLETE` you can move on to the next step. Exit using `CTRL + C`. 
@@ -113,7 +106,6 @@ Set and embed additional variables into manifest file and deploy the cluster to 
 ```bash
 source config_files/dr_region_env.sh
 envsubst < config_files/dr_region_eksctl_template.yaml | eksctl create cluster -f -
-
 ```
 
 EKS cluster creation process completes in about 15 minutes. Once it completes update your kubeconfig file to access the cluster by doing `aws eks update-kubeconfig --name $DR_CLUSTER_NAME --region $DR_REGION`. 
@@ -134,7 +126,6 @@ Configure replication from primary to DR region.
 ```bash
 aws efs update-file-system-protection --file-system-id $DR_EFS_ID --replication-overwrite-protection DISABLED --region $DR_REGION
 aws efs create-replication-configuration --source-file-system-id $PRI_EFS_ID --destinations Region=$DR_REGION,FileSystemId=$DR_EFS_ID --region $PRI_REGION
-
 ```
 
 You can check the status of the replication by `watch aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION --query 'Replications[].Destinations[].Status' --output text`. It takes ~15 minutes for the initial replication to complete. Once you see the `Status` as `Enabled` you can then move on to the next step. 
@@ -155,14 +146,12 @@ Create a Storage Class resource named as `efs-sc`.
 
 ```bash
 envsubst < config_files/pri_sc.yaml | kubectl apply -f -
-
 ```
 
 Verify that the resource got created successfully. 
 
 ```bash
 kubectl get storageclass efs-sc
-
 ```
 
 ---
@@ -180,14 +169,12 @@ Below command will create a Deployment `efs-app` and a Persistent Volume Claim (
 
 ```bash
 kubectl apply -f config_files/application.yaml
-
 ```
 
 Verify that the resource got created successfully. 
 
 ```bash
 kubectl get deployment,pvc,svc
-
 ```
 
 The container image we use in the Deployment is a simple [Apache Web Server](https://httpd.apache.org/).
@@ -217,7 +204,6 @@ Create an index.html file in the respective folder with simple content.
 ```bash
 echo "Let's test EFS across regions !" > /usr/local/apache2/htdocs/index.html
 exit
-
 ```
 
 ### Step 14 - Test access to the application
@@ -227,7 +213,6 @@ Grab the DNS name of the AWS ELB which exposes the application.
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 echo $APPURL
-
 ```
 
 In your browser navigate to the DNS name and verify that you can see the page with "Let's test EFS across regions !" .
@@ -241,26 +226,22 @@ In this task we will implement steps 11 & 12 & 13 above for the DR region.
 
 ```bash
 envsubst < config_files/dr_sc.yaml | kubectl apply -f -
-
 ```
 
 Verify that the resource got created successfully. 
 
 ```bash
 kubectl get storageclass efs-sc
-
 ```
 
 ```bash
 kubectl apply -f config_files/application.yaml
-
 ```
 
 Verify that the resource got created successfully. 
 
 ```bash
 kubectl get deployment,pvc,svc
-
 ```
 
 Grab the DNS name of the AWS ELB which exposes the application.
@@ -268,7 +249,6 @@ Grab the DNS name of the AWS ELB which exposes the application.
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 echo $APPURL
-
 ```
 
 In your browser navigate to the DNS name and verify that you can see the page with "Let's test EFS across regions !" .
@@ -307,7 +287,6 @@ Create an index.html file in the respective folder with simple content.
 ```bash
 echo "We have now successfully failed over to the DR region!" > /usr/local/apache2/htdocs/index.html
 exit
-
 ```
 
 Grab the DNS name of the AWS ELB which exposes the application.
@@ -315,7 +294,6 @@ Grab the DNS name of the AWS ELB which exposes the application.
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 echo $APPURL
-
 ```
 
 Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and verify that you can see the page with "We have now successfully failed over to the DR region!" . 
@@ -336,7 +314,6 @@ At this stage you can check the access to the web page in the primary region. Ma
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 echo $APPURL
-
 ```
 
 Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and verify that you can see the page with "We have now successfully failed over to the DR region!" ; since this is the latest content on the web page. 
@@ -374,7 +351,6 @@ Create an index.html file in the respective folder with simple content.
 ```bash
 echo "We are back on the primary region !" > /usr/local/apache2/htdocs/index.html
 exit
-
 ```
 
 You can check the access to the web page in the primary region. Make sure you are in the primary cluster kubectl context by using `kubectl config use-context <context-name>` or `kubectx <context-name>`. Grab the DNS name of the AWS ELB which exposes the application.
@@ -382,7 +358,6 @@ You can check the access to the web page in the primary region. Make sure you ar
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 echo $APPURL
-
 ```
 
 Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and verify that you can see the page with "We are back on the primary region !".
@@ -394,7 +369,6 @@ Configure replication from primary to DR region.
 ```bash
 aws efs update-file-system-protection --file-system-id $DR_EFS_ID --replication-overwrite-protection DISABLED --region $DR_REGION
 aws efs create-replication-configuration --source-file-system-id $PRI_EFS_ID --destinations Region=$DR_REGION,FileSystemId=$DR_EFS_ID --region $PRI_REGION
-
 ```
 
 You can check the status of the replication by `aws efs describe-replication-configurations --file-system-id $PRI_EFS_ID --region $PRI_REGION`. You can also do `watch aws efs...` as well. It takes several minutes for this process to complete. Once you see the `Status` as `Enabled` you can then move on to the next step.
@@ -408,7 +382,6 @@ Make sure you are in the DR cluster kubectl context by using `kubectl config use
 ```bash
 export APPURL=$(kubectl get svc efs-app-service -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 echo $APPURL
-
 ```
 
 Use your browser in Incognito/InPrivate mode; navigate to the DNS name above and verify that you can see the page with "We are back on the primary region !".
@@ -429,7 +402,6 @@ You can check the status of the by `aws efs describe-replication-configurations 
 ```bash
 kubectl delete -f config_files/application.yaml
 kubectl delete storageclass efs-sc
-
 ```
 
 - Delete the EKS cluster in the DR region
@@ -448,7 +420,6 @@ Verify the stack deletion using the following command.
 
 ```bash
 watch aws cloudformation describe-stacks --stack-name $DR_CFN_NAME --query "Stacks[].StackStatus" --output text --region $DR_REGION
-
 ```
 
 Once the output shows `...Stack with id ... does not exist` you can move on to the next step. Exit using `CTRL + C`. 
@@ -458,7 +429,6 @@ Once the output shows `...Stack with id ... does not exist` you can move on to t
 ```bash
 kubectl delete -f config_files/application.yaml
 kubectl delete storageclass efs-sc
-
 ```
 
 - Delete the EKS cluster in the primary region.
@@ -477,7 +447,6 @@ Verify the stack deletion using the following command.
 
 ```bash
 watch aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[].StackStatus" --output text --region $PRI_REGION
-
 ```
 
 Once the output shows `...Stack with id ... does not exist` you can exit using `CTRL + C`. 
