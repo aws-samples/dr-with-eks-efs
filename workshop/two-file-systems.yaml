@@ -1,0 +1,139 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-transcoding-sc
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: "TRANSCODING_FS_ID_GOES_HERE"
+  directoryPerms: "700"
+  gidRangeStart: "1000" # optional
+  gidRangeEnd: "2000" # optional
+  basePath: "/dynamic_provisioning" # optional
+  subPathPattern: "${.PVC.namespace}/${.PVC.name}" # optional
+  ensureUniqueDirectory: "false" # optional
+  reuseAccessPoint: "false" # optional
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: stg354
+  name: efs-transcoding-claim
+spec:
+  storageClassName: efs-transcoding-sc
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stg354
+  name: producer
+spec:
+  selector:
+    matchLabels:
+      run: producer
+  replicas: 50
+  template:
+    metadata:
+      labels:
+        run: producer
+    spec:
+      serviceAccountName: stg354-sa
+      containers:
+        - name: stg354-producer
+          image: public.ecr.aws/a8x8v1t1/stg354:producer-latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: efs-persistent
+              mountPath: /efs1
+            - name: efs-persistent2
+              mountPath: /efs2
+      volumes:
+        - name: efs-persistent
+          persistentVolumeClaim:
+            claimName: efs-claim
+        - name: efs-persistent2
+          persistentVolumeClaim:
+            claimName: efs-transcoding-claim
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stg354
+  name: consumer
+spec:
+  selector:
+    matchLabels:
+      run: consumer
+  replicas: 50
+  template:
+    metadata:
+      labels:
+        run: consumer
+    spec:
+      serviceAccountName: stg354-sa
+      containers:
+        - name: stg354-consumer
+          image: public.ecr.aws/a8x8v1t1/stg354:consumer-latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: efs-persistent
+              mountPath: /efs1
+            - name: efs-persistent2
+              mountPath: /efs2
+      volumes:
+        - name: efs-persistent
+          persistentVolumeClaim:
+            claimName: efs-claim
+        - name: efs-persistent2
+          persistentVolumeClaim:
+            claimName: efs-transcoding-claim
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stg354
+  name: controller
+spec:
+  selector:
+    matchLabels:
+      run: controller
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: controller
+        app.kubernetes.io/name: controller
+    spec:
+      containers:
+        - name: stg354-controller
+          image: public.ecr.aws/a8x8v1t1/stg354:controller-latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+              name: http-flask-svc
+          volumeMounts:
+            - name: efs-persistent
+              mountPath: /efs1
+            - name: efs-persistent2
+              mountPath: /efs2
+      volumes:
+        - name: efs-persistent
+          persistentVolumeClaim:
+            claimName: efs-claim
+        - name: efs-persistent2
+          persistentVolumeClaim:
+            claimName: efs-transcoding-claim
+
