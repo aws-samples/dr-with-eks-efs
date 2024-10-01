@@ -1,0 +1,28 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: '${PRI_CLUSTER_NAME}'
+  region: '${PRI_REGION}'
+  version: '1.28'
+  tags:
+    EnvironmentName: '${PRI_ENVIRONMENT_NAME}'
+
+vpc:
+  subnets: 
+    private:
+      private1:
+          id: '${PRI_PRIVATE_SUBNET_1}'
+      private2:
+          id: '${PRI_PRIVATE_SUBNET_2}'
+  clusterEndpoints:
+    publicAccess: true
+
+managedNodeGroups:
+- name: ng
+  desiredCapacity: 2
+  instanceType: t3.medium
+  privateNetworking: true
+  subnets: 
+    - private1
+    - private2
