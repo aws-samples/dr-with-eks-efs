@@ -4,7 +4,7 @@ kind: ClusterConfig
 metadata:
   name: '${PRI_CLUSTER_NAME}'
   region: '${PRI_REGION}'
-  version: '1.28'
+  version: '1.30'
   tags:
     EnvironmentName: '${PRI_ENVIRONMENT_NAME}'
 
