@@ -4,7 +4,7 @@ kind: ClusterConfig
 metadata:
   name: '${DR_CLUSTER_NAME}'
   region: '${DR_REGION}'
-  version: '1.28'
+  version: '1.30'
   tags:
     EnvironmentName: '${DR_ENVIRONMENT_NAME}'
     
