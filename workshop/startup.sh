@@ -43,6 +43,9 @@ add_or_update_env_var
 
 add_or_update_env_var "MY_VARIABLE" "my_value"
 add_or_update_env_var "AWS_DEFAULT_REGION" "us-west-2"
+add_or_update_env_var "PRI_CLUSTER_NAME" "primary"
+add_or_update_env_var "DR_CLUSTER_NAME" "dr"
+
 
 # Add more variables as needed
 # add_or_update_env_var "ANOTHER_VARIABLE" "another_value"
