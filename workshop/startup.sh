@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Install gettext
 sudo yum install -y gettext
 
@@ -18,7 +20,7 @@ aws eks update-kubeconfig --name primary --region us-west-2
 git clone https://github.com/aws-samples/dr-with-eks-efs.git
 cd dr-with-eks-efs/workshop
 
-#!/bin/bash
+
 
 # Function to add or update an environment variable in .bashrc
 add_or_update_env_var() {
