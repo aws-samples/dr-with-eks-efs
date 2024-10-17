@@ -34,9 +34,19 @@ Rename the primary cluster context.
 kubectx pri=arn:aws:eks:us-east-1:<AWS_ACCOUNT_ID>:<context_name_for_primary_cluster>
 ```
 
+Output
+```
+Context "arn:aws:eks:us-east-1:<AWS_ACCOUNT_ID>:<context_name_for_primary_cluster>" renamed to "pri".
+```
+
 Rename the DR cluster context
 
 ```
 kubectx sec=arn:aws:eks:us-west-2:<AWS_ACCOUNT_ID>:<context_name_for_dr_cluster>
+```
+
+Output
+```
+Context "arn:aws:eks:us-west-2:<AWS_ACCOUNT_ID>:<context_name_for_dr_cluster>" renamed to "dr".
 ```
 
