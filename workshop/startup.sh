@@ -56,9 +56,5 @@ echo "Changes have been applied to the current session"
 # Optionally, print the new variables to verify
 #echo "MY_VARIABLE is now set to: $MY_VARIABLE"
 
-
-
 # Clone GitHub repo for the workshop
 
-git clone https://github.com/aws-samples/dr-with-eks-efs.git
-cd dr-with-eks-efs/workshop
