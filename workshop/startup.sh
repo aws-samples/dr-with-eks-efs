@@ -18,6 +18,10 @@ sudo mv /tmp/eksctl /usr/local/bin
 aws eks update-kubeconfig --name dr --region us-east-1
 aws eks update-kubeconfig --name primary --region us-west-2
 
+# Define region variables in advance
+export PRI_REGION=us-west-2
+export DR_REGION=us-east-1
+
 # Function to add or update an environment variable in .bashrc
 add_or_update_env_var() {
     local var_name=$1
