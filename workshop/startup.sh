@@ -33,18 +33,17 @@ add_or_update_env_var "PRI_REGION" "us-west-2"
 add_or_update_env_var "PRI_ENVIRONMENT_NAME" "primary"
 add_or_update_env_var "PRI_CFN_NAME" "primary-workshop"
 add_or_update_env_var "PRI_CLUSTER_NAME" "primary"
-add_or_update_env_var "PRI_PRIVATE_SUBNET_1" "$(aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[0].Outputs[?contains(OutputKey, 'PrivateSubnet1')].OutputValue" --output text --region $PRI_REGION)"
-add_or_update_env_var "PRI_PRIVATE_SUBNET_2" "$(aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[0].Outputs[?contains(OutputKey, 'PrivateSubnet2')].OutputValue" --output text --region $PRI_REGION)"
+add_or_update_env_var "PRI_PRIVATE_SUBNET_1" "$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=*Private-Subnet-AZ1*" --query "Subnets[].SubnetId" --output text --region $PRI_REGION)"
+add_or_update_env_var "PRI_PRIVATE_SUBNET_2" "$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=*Private-Subnet-AZ2*" --query "Subnets[].SubnetId" --output text --region $PRI_REGION)"
 
 add_or_update_env_var "DR_REGION" "us-east-1"
 add_or_update_env_var "DR_ENVIRONMENT_NAME" "dr"
 add_or_update_env_var "DR_CFN_NAME" "dr"
 add_or_update_env_var "DR_CLUSTER_NAME" "dr"
-add_or_update_env_var "DR_PRIVATE_SUBNET_1" "$(aws cloudformation describe-stacks --stack-name $DR_CFN_NAME --query "Stacks[0].Outputs[?contains(OutputKey, 'PrivateSubnet1')].OutputValue" --output text --region $Dr_REGION)"
-add_or_update_env_var "DR_PRIVATE_SUBNET_2" "$(aws cloudformation describe-stacks --stack-name $DR_CFN_NAME --query "Stacks[0].Outputs[?contains(OutputKey, 'PrivateSubnet2')].OutputValue" --output text --region $DR_REGION)"
+add_or_update_env_var "DR_PRIVATE_SUBNET_1" "$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=*Private-Subnet-AZ1*" --query "Subnets[].SubnetId" --output text --region $DR_REGION)"
+add_or_update_env_var "DR_PRIVATE_SUBNET_2" "$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=*Private-Subnet-AZ2*" --query "Subnets[].SubnetId" --output text --region $DR_REGION)"
 
-# Add more variables as needed
-# add_or_update_env_var "ANOTHER_VARIABLE" "another_value"
+# Confirm that variables are added
 
 echo "Environment variables have been added/updated in ~/.bashrc"
 
@@ -56,5 +55,5 @@ echo "Changes have been applied to the current session"
 # Optionally, print the new variables to verify
 #echo "MY_VARIABLE is now set to: $MY_VARIABLE"
 
-# Clone GitHub repo for the workshop
+
 
