@@ -2,7 +2,7 @@
 
 This folder contains the manifests and scripts used in the Building Modern Resilient Applications using Amazon EKS and Amazon EFS Workshop.
 
-Please use the following commands to startoff with Cloudshell.
+Please use the following commands first in Cloudshell.
 
 ```
 git clone https://github.com/aws-samples/dr-with-eks-efs.git
