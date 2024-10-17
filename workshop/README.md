@@ -18,6 +18,8 @@ source ~/.bashrc
 
 You will need to switch between contexts in kubectl at later stages of the workshop. To make that process easier you can rename the contexts in the kubectl config file by following the below commands. 
 
+1. List the existing contexts.
+
 ```
 kubectx
 ```
@@ -28,7 +30,7 @@ arn:aws:eks:us-east-1:<AWS_ACCOUNT_ID>:<context_name_for_primary_cluster>
 arn:aws:eks:us-west-2:<AWS_ACCOUNT_ID>:<context_name_for_dr_cluster>
 ```
 
-Rename the primary cluster context.
+2. Rename the primary cluster context.
 
 ```
 kubectx pri=arn:aws:eks:us-east-1:<AWS_ACCOUNT_ID>:<context_name_for_primary_cluster>
@@ -39,7 +41,7 @@ Output
 Context "arn:aws:eks:us-east-1:<AWS_ACCOUNT_ID>:<context_name_for_primary_cluster>" renamed to "pri".
 ```
 
-Rename the DR cluster context
+3. Rename the DR cluster context
 
 ```
 kubectx sec=arn:aws:eks:us-west-2:<AWS_ACCOUNT_ID>:<context_name_for_dr_cluster>
