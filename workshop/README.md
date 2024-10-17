@@ -14,7 +14,7 @@ chmod +x workshop/startup.sh
 source ~/.bashrc
 ```
 
-## Optional
+## Optional step using kubectx and easier kubectl context names
 
 You will need to switch between contexts in kubectl at later stages of the workshop. To make that process easier you can rename the contexts in the kubectl config file by following the below commands. 
 
