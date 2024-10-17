@@ -32,6 +32,7 @@ add_or_update_env_var "AWS_DEFAULT_REGION" "us-west-2"
 add_or_update_env_var "PRI_REGION" "us-west-2"
 add_or_update_env_var "PRI_CLUSTER_NAME" "primary"
 add_or_update_env_var "PRI_ENVIRONMENT_NAME" "primary"
+add_or_update_env_var "PRI_SUBNET_1" "$(aws cloudformation describe-stacks --stack-name $PRI_CFN_NAME --query "Stacks[0].Outputs[?contains(OutputKey, 'PrivateSubnet1')].OutputValue" --output text --region $PRI_REGION)"
 add_or_update_env_var "DR_CLUSTER_NAME" "dr"
 
 # Add more variables as needed
