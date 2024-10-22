@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: efs-app
+  name: efs-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: efs-app
+  template:
+    metadata:
+      labels:
+        app: efs-app
+    spec:
+      containers:
+      - name: web-container
+        image: public.ecr.aws/docker/library/httpd:latest
+        volumeMounts:
+          - name: persistent-storage
+            mountPath: /usr/local/apache2/htdocs/
+      volumes:
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: efs-app-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: efs-app-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http
+  selector:
+    app: efs-app
