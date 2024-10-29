@@ -7,7 +7,13 @@ metadata:
   version: '1.30'
   tags:
     EnvironmentName: '${DR_ENVIRONMENT_NAME}'
-    
+
+iam:
+  withOIDC: true
+
+addons:
+- name: aws-efs-csi-driver
+
 vpc:
   subnets: 
     private:
