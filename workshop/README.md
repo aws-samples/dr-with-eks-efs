@@ -1,6 +1,6 @@
 # Workshop Content
 
-This folder contains the manifests and scripts used in the Building Modern Resilient Applications using Amazon EKS and Amazon EFS Workshop.
+This folder contains the manifests and scripts used in the [Building Modern Resilient Applications using Amazon EKS and Amazon EFS Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/731e4034-4681-4277-9bc4-46fafa1199d1/en-US).
 
 Please use the following commands first in Cloudshell.
 
